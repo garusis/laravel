@@ -2,7 +2,7 @@
  * Created by garusis on 16/05/16.
  */
 angular
-    .module('sw2', ['ngMaterial', 'satellizer', 'ui.router', 'ngMessages','md.data.table'])
+    .module('sw2', ['ngMaterial', 'satellizer', 'ui.router', 'ngMessages', 'md.data.table'])
     .config(function ($mdThemingProvider) {
         $mdThemingProvider.theme('default');
     })
@@ -39,7 +39,8 @@ angular
             });
     })
     .config(function ($authProvider) {
-        $authProvider.loginUrl = document.getElementsByTagName('base')[0].href + 'index.php/api/authenticate';
+        $authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
+        $authProvider.loginUrl = $authProvider.loginUrl + 'index.php/api/authenticate';
     })
     .run(function ($rootScope, $auth, $state) {
         $rootScope.$state = $state;
@@ -62,8 +63,17 @@ angular
                 })
                 .catch(function () {
                     $form.username.$setValidity('match', false);
+
+                    var $unwatch = $scope.$watch(function () {
+                        return JSON.stringify($scope.vmLogin);
+                    }, function (newValue, oldValue) {
+                        if (oldValue !== newValue) {
+                            $form.username.$setValidity('match', true);
+                            $unwatch();
+                        }
+                    });
                 });
-        }
+        };
     })
     .controller('HomeController', function ($scope) {
 
