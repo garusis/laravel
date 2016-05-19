@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // Loop through each user above and create the record for them in the database
+        User::truncate();
         foreach ($users as $user)
         {
             User::create($user);
