@@ -1,0 +1,37 @@
+<div layout="row">
+    <div flex="30" flex-offset="35" style="margin-top: 120px">
+        <form name="loginForm" ng-submit="loginForm.$valid && loginCtrl.login(loginForm, vmLogin)" novalidate>
+            <md-card md-whiteframe="3">
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Inicio de Sesión</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+
+                    <md-input-container class="md-block">
+                        <label>Usuario</label>
+                        <input name="username" ng-model="vmLogin.username" required>
+                        <div ng-messages="loginForm.username.$error"
+                             ng-show="loginForm.$submitted || loginForm.username.$dirty">
+                            <div ng-message="required">Debe ingresar su Usuario</div>
+                            <div ng-message="match">Usuario y Contraseña no coinciden</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Contraseña</label>
+                        <input name="password" type="password" ng-model="vmLogin.password" required/>
+                        <div ng-messages="loginForm.password.$error"
+                             ng-show="loginForm.$submitted || loginForm.password.$dirty">
+                            <div ng-message="required">Debe ingresar su Contraseña</div>
+                        </div>
+                    </md-input-container>
+
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <md-button type="submit">Acceder</md-button>
+                </md-card-actions>
+            </md-card>
+        </form>
+    </div>
+</div>

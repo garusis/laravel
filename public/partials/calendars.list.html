@@ -1,0 +1,58 @@
+<div layout="column" style="height:800px;" ng-cloak>
+    <section layout="row" flex>
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-is-open="true" md-is-locked-open="true"
+                    md-component-id="left">
+            <header class="nav-header" style="text-align: center">
+                <a ui-sref="home.calendars.list" class="docs-logo">
+                    <img src="img/logo.png" style="max-width: 50%" alt="">
+                </a>
+            </header>
+            <md-content flex>
+                <ul>
+                    <li>
+                        <a ui-sref="home.calendars.list">Calendarios</a>
+                    </li>
+                </ul>
+            </md-content>
+        </md-sidenav>
+        <div flex layout="column">
+            <md-toolbar>
+                <h4 style="margin-left: 20px">
+                    <a ui-sref="home_calendars_list">Inicio</a> / <a ui-sref="home_calendars_list">Calendarios</a>
+                    / <a>Listado</a>
+                </h4>
+            </md-toolbar>
+            <md-content layout-paddint>
+                <md-toolbar class="md-table-toolbar md-default">
+                    <div class="md-toolbar-tools">
+                        <span>Listado de Calendarios</span>
+                        <span flex></span>
+                        <a class="md-button md-ink-ripple md-raised md-primary" ui-sref="home_calendars_new" aria-label="Crear Nuevo">
+                            Crear Nuevo
+                        </a>
+                    </div>
+                </md-toolbar>
+                <md-table-container>
+                    <table md-table md-row-select multiple ng-model="selected" md-progress="promise">
+                        <thead md-head md-order="query.order" md-on-reorder="getDesserts">
+                        <tr md-row>
+                            <th md-column md-order-by="nameToLower"><span>#Elección</span></th>
+                            <th md-column md-numeric md-order-by="calories.value"><span>Nombre</span></th>
+                            <th md-column md-numeric>Descripción</th>
+                            <th md-column md-numeric>Estado</th>
+                        </tr>
+                        </thead>
+                        <tbody md-body>
+                        <tr md-row md-select="dessert" md-select-id="name" md-auto-select ng-repeat="dessert in desserts.data">
+                            <td md-cell>{{dessert.name}}</td>
+                            <td md-cell>{{dessert.calories.value}}</td>
+                            <td md-cell>{{dessert.fat.value | number: 1}}</td>
+                            <td md-cell>{{dessert.carbs.value}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </md-table-container>
+            </md-content>
+        </div>
+    </section>
+</div>
