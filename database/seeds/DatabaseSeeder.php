@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
         $users = array(
             [
                 'username' => 'user1',
-                'firstName' => 'Marcos J.',
-                'lastName' => 'Alvarez M.',
+                'firstname' => 'Marcos J.',
+                'lastname' => 'Alvarez M.',
                 'identityNumber' => '1090419420',
                 'active' => true,
                 'password' => Hash::make('123456')
