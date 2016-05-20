@@ -166,7 +166,7 @@ angular
             if ($state.current.name === 'home.calendars.new') {
                 vmCalendar.id = Date.now();
                 calendars.push(vmCalendar);
-                //delete $localStorage.currentCalendar;
+                delete $localStorage.currentCalendar;
                 $state.go('home.calendars.show', {id: vmCalendar.id});
             } else {
                 $mdDialog.show(
