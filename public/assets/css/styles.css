@@ -1,3 +1,24 @@
+html, body, body > [ui-view], section.wrapper, section.wrapper > * {
+    height: 100%;
+    min-height: 100%;
+}
+
 body {
     background: #EDF0F1;
+}
+
+.breadcrumbs {
+    padding-top: 6px;
+    margin-bottom: -6px;
+}
+
+.breadcrumbs i {
+    vertical-align: top;
+    display: inline-block;
+    line-height: 48px;
+}
+
+#form-calendar md-input-container {
+    margin-top: 0;
+    margin-bottom: 0;
 }

@@ -1,0 +1,153 @@
+<md-toolbar class="md-menu-toolbar">
+    <div class="md-toolbar-tools">
+        <span>Nuevo Calendario</span>
+    </div>
+</md-toolbar>
+<md-content>
+    <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="Datos">
+            <md-content class="md-padding layout-margin-lg">
+                <form id="form-calendar" name="calendarForm"
+                      ng-submit="calendarForm.$valid && nCalCtrl.save(calendarForm, vmCalendar)" novalidate>
+                    <div layout="row">
+                        <div flex="60" layout="column">
+                            <div layout="row" style="margin-top: 30px">
+                                <md-input-container flex="50">
+                                    <label for="no_eleccion"># Elección</label>
+                                    <input type="text" name="noElection" id="no_eleccion" required
+                                           ng-model="vmCalendar.noElection">
+                                    <div ng-messages="calendarForm.noElection.$error"
+                                         ng-show="calendarForm.$submitted || calendarForm.noElection.$touched">
+                                        <div ng-message="required">Este campo es requerido</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container flex="50">
+                                    <label for="no_eleccion">Estado</label>
+                                    <md-select name="status" required="" ng-model="vmCalendar.status"
+                                               placeholder="Seleccione el estado">
+                                        <md-option ng-value="status.value"
+                                                   ng-repeat="(key, status) in calendarStatus">
+                                            {{ status.label }}
+                                        </md-option>
+                                    </md-select>
+                                    <div ng-messages="calendarForm.status.$error"
+                                         ng-show="calendarForm.$submitted || calendarForm.status.$touched">
+                                        <div ng-message="required">Debe seleccionar un estado</div>
+                                    </div>
+                                </md-input-container>
+
+                            </div>
+                            <div layout="row">
+                                <md-input-container flex>
+                                    <label for="name">Nombre</label>
+                                    <input type="text" name="name" id="name" ng-model="vmCalendar.name"
+                                           required>
+                                    <div ng-messages="calendarForm.name.$error"
+                                         ng-show="calendarForm.$submitted || calendarForm.name.$touched">
+                                        <div ng-message="required">Este campo es requerido</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div layout="row">
+                                <md-input-container flex>
+                                    <label for="description">Descripción</label>
+                                    <textarea id="description" name="description" ng-model="vmCalendar.description"
+                                              required md-maxlength="150"></textarea>
+                                    <div ng-messages="calendarForm.description.$error"
+                                         ng-show="calendarForm.$submitted || calendarForm.description.$touched">
+                                        <div ng-message="required">Este campo es requerido</div>
+                                        <div ng-message="md-maxlength">Excede la cantidad de caracteres permitidos</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <md-card id="event-table" class="md-whiteframe-4dp" style="margin-top: 80px;">
+                                <md-toolbar class="md-table-toolbar md-default">
+                                    <div class="md-toolbar-tools">
+                                        <h2>Listado de Eventos</h2>
+                                        <div flex></div>
+                                        <md-button class="md-fab md-primary md-mini" aria-label="Agregar evento"
+                                                   ng-click="nCalCtrl.addEvent($event)">
+                                            <md-icon md-font-library="material-icons">add</md-icon>
+                                        </md-button>
+                                    </div>
+                                </md-toolbar>
+                                <md-table-container style="min-height: 200px">
+                                    <table md-table md-row-select multiple>
+                                        <thead md-head>
+                                        <tr md-row>
+                                            <th md-column>
+                                                <span>Fecha</span></th>
+                                            <th md-column>
+                                                <span>Evento</span>
+                                            </th>
+                                            <th md-column md-numeric>
+                                                <span>Acciones</span>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody md-body>
+                                        <tr md-row md-select="vmCalendar.events" md-select-id="name" md-auto-select
+                                            ng-repeat="event in vmCalendar.events">
+                                            <td md-cell>{{event.date | date:'dd / MM / yyyy'}}</td>
+                                            <td md-cell>{{event.name}}</td>
+                                            <td md-cell>
+                                                <md-button class="md-fab md-warn md-mini" aria-label="Agregar evento"
+                                                           ng-click="nCalCtrl.removeEvent(vmCalendar, $index)">
+                                                    <md-icon md-font-library="material-icons">delete</md-icon>
+                                                </md-button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </md-table-container>
+                            </md-card>
+                        </div>
+                        <div flex="40" layout="column">
+                            <div layout="row">
+                                <div flex=""></div>
+                                <md-button type="submit" class="md-raised md-primary" aria-label="Crear Nuevo">
+                                    Guardar
+                                </md-button>
+                                <md-button class="btn-default md-raised">Exportar</md-button>
+                            </div>
+                            <div flex=""></div>
+                            <div layout="row">
+                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp" style="margin-top: 20px; height: 200px">
+                                    <div flex=""></div>
+                                    <h3 style="text-align: center">
+                                        Documentos y Soportes
+                                    </h3>
+                                    <div flex=""></div>
+                                </md-card>
+                            </div>
+                            <div layout="row">
+                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp" style="margin-top: 20px; height: 200px">
+                                    <div flex=""></div>
+                                    <h3 style="text-align: center">
+                                        Listado de Actas
+                                    </h3>
+                                    <div flex=""></div>
+                                </md-card>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </md-content>
+        </md-tab>
+        <md-tab ng-disabled="!vmCalendar.id" label="Candidatos">
+            <md-content class="md-padding">
+                Candidatos
+            </md-content>
+        </md-tab>
+        <md-tab ng-disabled="!vmCalendar.id" label="Mesas">
+            <md-content class="md-padding">
+                Mesas
+            </md-content>
+        </md-tab>
+        <md-tab ng-disabled="!vmCalendar.id" label="Mesas">
+            <md-content class="md-padding">
+                Escrutadores
+            </md-content>
+        </md-tab>
+    </md-tabs>
+</md-content>

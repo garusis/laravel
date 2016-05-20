@@ -1,0 +1,44 @@
+<md-dialog aria-label="Agregar Evento" ng-cloak>
+    <form id="form-calendar" name="eventForm"
+          ng-submit="eventForm.$valid && AEvtCtrl.addEvent(vmEvent)">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Agregar Evento</h2>
+                <span flex></span>
+                <md-button class="md-fab md-primary md-hue-1 md-mini" ng-click="AEvtCtrl.closeDialog()">
+                    <md-icon md-font-library="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" style="width: 300px">
+                <div layout="row" style="margin-top: 30px">
+                    <md-datepicker style="width: 100%; margin: 15px 0" flex id="date" name="date" md-placeholder="Fecha del Evento" ng-model="vmEvent.date"
+                                   required></md-datepicker>
+                    <div ng-messages="eventForm.date.$error" ng-show="eventForm.$submitted || eventForm.date.$touched">
+                        <div ng-message="required">Este campo es requerido</div>
+                    </div>
+                </div>
+                <div layout="row">
+                    <md-input-container flex>
+                        <label for="name">Nombre del Evento</label>
+                        <input type="text" name="name" id="name" ng-model="vmEvent.name"
+                               required>
+                        <div ng-messages="eventForm.name.$error"
+                             ng-show="eventForm.$submitted || eventForm.name.$touched">
+                            <div ng-message="required">Este campo es requerido</div>
+                        </div>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button type="submit" class="md-raised md-primary md-hue-1">
+                Agregar
+            </md-button>
+            <md-button class="md-raised md-warn md-hue-2" ng-click="AEvtCtrl.closeDialog()">
+                Cancelar
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

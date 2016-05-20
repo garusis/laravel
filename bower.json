@@ -13,6 +13,9 @@
     "angular-ui-router": "^0.2.18",
     "satellizer": "^0.14.0",
     "angular-messages": "^1.5.5",
-    "angular-material-data-table": "^0.10.9"
+    "angular-material-data-table": "^0.10.9",
+    "ngstorage": "^0.3.10",
+    "lodash": "^4.12.0",
+    "angular-loading-bar": "^0.9.0"
   }
 }

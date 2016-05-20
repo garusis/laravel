@@ -1,0 +1,29 @@
+<md-toolbar class="md-menu-toolbar">
+    <div class="md-toolbar-tools">
+        <span>Listado de Calendarios</span>
+        <span flex></span>
+        <a class="md-button md-raised md-primary md-hue-3" style="color: white" ui-sref="home.calendars.new" aria-label="Crear Nuevo">
+            Crear Nuevo
+        </a>
+    </div>
+</md-toolbar>
+<md-table-container>
+    <table md-table ng-model="calendars">
+        <thead md-head >
+        <tr md-row>
+            <th md-column ><span>#Elección</span></th>
+            <th md-column ><span>Nombre</span></th>
+            <th md-column >Descripción</th>
+            <th md-column >Estado</th>
+        </tr>
+        </thead>
+        <tbody md-body>
+        <tr md-row ng-repeat="calendar in calendars">
+            <td md-cell><a ui-sref="home.calendars.show({id:calendar.id})">{{calendar.noElection}}</a></td>
+            <td md-cell>{{calendar.name}}</td>
+            <td md-cell>{{calendar.description}}</td>
+            <td md-cell>{{calendar.status.label}}</td>
+        </tr>
+        </tbody>
+    </table>
+</md-table-container>
