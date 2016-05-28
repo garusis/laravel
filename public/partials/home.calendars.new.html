@@ -4,17 +4,17 @@
     </div>
 </md-toolbar>
 <md-content>
-    <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Datos">
+    <md-tabs md-dynamic-height md-border-bottom md-selected="selectedIndex">
+        <md-tab label="Datos" ui-sref="home.calendars.show({id:vmCalendar.id})" >
             <md-content class="md-padding layout-margin-lg">
-                <form id="form-calendar" name="calendarForm"
+                <form id="calend_form-calendar" name="calendarForm"
                       ng-submit="calendarForm.$valid && nCalCtrl.save(calendarForm, vmCalendar)" novalidate>
                     <div layout="row">
                         <div flex="60" layout="column">
                             <div layout="row" style="margin-top: 30px">
                                 <md-input-container flex="50">
-                                    <label for="no_eleccion"># Elección</label>
-                                    <input type="text" name="noElection" id="no_eleccion" required
+                                    <label for="calend_no_eleccion"># Elección</label>
+                                    <input type="text" name="noElection" id="calend_no_eleccion" required
                                            ng-model="vmCalendar.noElection">
                                     <div ng-messages="calendarForm.noElection.$error"
                                          ng-show="calendarForm.$submitted || calendarForm.noElection.$touched">
@@ -22,8 +22,8 @@
                                     </div>
                                 </md-input-container>
                                 <md-input-container flex="50">
-                                    <label for="no_eleccion">Estado</label>
-                                    <md-select name="status" required="" ng-model="vmCalendar.status"
+                                    <label for="calend_status">Estado</label>
+                                    <md-select name="status" id="calend_status" required="" ng-model="vmCalendar.status"
                                                placeholder="Seleccione el estado">
                                         <md-option ng-value="status.value"
                                                    ng-repeat="(key, status) in calendarStatus">
@@ -39,8 +39,8 @@
                             </div>
                             <div layout="row">
                                 <md-input-container flex>
-                                    <label for="name">Nombre</label>
-                                    <input type="text" name="name" id="name" ng-model="vmCalendar.name"
+                                    <label for="calend_name">Nombre</label>
+                                    <input type="text" name="name" id="calend_name" ng-model="vmCalendar.name"
                                            required>
                                     <div ng-messages="calendarForm.name.$error"
                                          ng-show="calendarForm.$submitted || calendarForm.name.$touched">
@@ -50,8 +50,8 @@
                             </div>
                             <div layout="row">
                                 <md-input-container flex>
-                                    <label for="description">Descripción</label>
-                                    <textarea id="description" name="description" ng-model="vmCalendar.description"
+                                    <label for="calend_description">Descripción</label>
+                                    <textarea id="calend_description" name="description" ng-model="vmCalendar.description"
                                               required md-maxlength="150"></textarea>
                                     <div ng-messages="calendarForm.description.$error"
                                          ng-show="calendarForm.$submitted || calendarForm.description.$touched">
@@ -60,7 +60,7 @@
                                     </div>
                                 </md-input-container>
                             </div>
-                            <md-card id="event-table" class="md-whiteframe-4dp" style="margin-top: 80px;">
+                            <md-card id="calend_event-table" class="md-whiteframe-4dp" style="margin-top: 80px;">
                                 <md-toolbar class="md-table-toolbar md-default">
                                     <div class="md-toolbar-tools">
                                         <h2>Listado de Eventos</h2>
@@ -86,8 +86,8 @@
                                         </tr>
                                         </thead>
                                         <tbody md-body>
-                                        <tr md-row md-select="vmCalendar.events" md-select-id="name" md-auto-select
-                                            ng-repeat="event in vmCalendar.events">
+                                        <tr md-row md-select="vmCalendar.events" md-select-id="calend_name" md-auto-select
+                                            ng-repeat="event in vmCalendar.events | allAsDate:'date' | orderBy:'date'">
                                             <td md-cell>{{event.date | date:'dd / MM / yyyy'}}</td>
                                             <td md-cell>{{event.name}}</td>
                                             <td md-cell>
@@ -112,7 +112,8 @@
                             </div>
                             <div flex=""></div>
                             <div layout="row">
-                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp" style="margin-top: 20px; height: 200px">
+                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp"
+                                         style="margin-top: 20px; height: 200px">
                                     <div flex=""></div>
                                     <h3 style="text-align: center">
                                         Documentos y Soportes
@@ -121,7 +122,8 @@
                                 </md-card>
                             </div>
                             <div layout="row">
-                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp" style="margin-top: 20px; height: 200px">
+                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp"
+                                         style="margin-top: 20px; height: 200px">
                                     <div flex=""></div>
                                     <h3 style="text-align: center">
                                         Listado de Actas
@@ -134,9 +136,8 @@
                 </form>
             </md-content>
         </md-tab>
-        <md-tab ng-disabled="!vmCalendar.id" label="Candidatos">
-            <md-content class="md-padding">
-                Candidatos
+        <md-tab ng-disabled="!vmCalendar.id" label="Candidatos" ui-sref="home.calendars.show.candidates.list({id:vmCalendar.id})">
+            <md-content ui-view="candidates">
             </md-content>
         </md-tab>
         <md-tab ng-disabled="!vmCalendar.id" label="Mesas">

@@ -73,6 +73,48 @@ angular
                         controllerAs: 'nCalCtrl'
                     }
                 }
+            })
+            .state('home.calendars.show.candidates', {
+                url: 'candidatos/',
+                abstract: true,
+                views: {
+                    'candidates@home.calendars.show': {
+                        template: '<md-content class="md-padding" ui-view=""></md-content>',
+                        controller:['$scope', function ($scope) {
+                            $scope.nCalCtrl.setTabSelected(1);
+                        }]
+                    }
+                }
+            })
+            .state('home.calendars.show.candidates.list', {
+                url: 'listado/',
+                views: {
+                    '@home.calendars.show.candidates': {
+                        templateUrl: 'partials/home.calendars.candidates.list.html',
+                        controller: 'ListCalendarController',
+                        controllerAs: 'lCalCtrl'
+                    }
+                }
+            })
+            .state('home.calendars.show.candidates.new', {
+                url: 'nuevo/',
+                views: {
+                    '@home.calendars.show.candidates': {
+                        templateUrl: 'partials/home.calendars.candidates.new.html',
+                        controller: 'NewShowCandidateController',
+                        controllerAs: 'nCalCtrl'
+                    }
+                }
+            })
+            .state('home.calendars.show.candidates.show', {
+                url: 'ver/:id/',
+                views: {
+                    '@home.calendars.show.candidates': {
+                        templateUrl: 'partials/home.calendars.new.html',
+                        controller: 'NewCalendarController',
+                        controllerAs: 'nCalCtrl'
+                    }
+                }
             });
     })
     .config(function ($authProvider) {
@@ -92,10 +134,30 @@ angular
             }
         });
     })
+    .filter('allAsDate', function () {
+        return function (list, property) {
+            var propertyString = 'elem.' + property;
+            var assingExpression = propertyString + ' = new Date(val)';
+
+
+            return _.map(list, function (elem) {
+                var val = eval(propertyString);
+                if (!_.isDate(val)) {
+                    eval(assingExpression);
+                }
+                return elem;
+            });
+        };
+    })
     .constant('CALENDAR_STATUS', {
         active: {label: 'Activo', value: 'a'},
         finished: {label: 'Culminado', value: 'c'},
         cancel: {label: 'Cancelado', value: 'cc'}
+    })
+    .constant('CANDIDATES_STATUS', {
+        active: {label: 'Pendiente', value: 'p'},
+        finished: {label: 'Aprobado', value: 'a'},
+        cancel: {label: 'Inhabilitado', value: 'i'}
     })
     .controller('LoginController', function ($scope, $auth, $state) {
         $scope.vmLogin = {};
@@ -132,6 +194,8 @@ angular
     })
     .controller('NewCalendarController', function ($scope, $state, $stateParams, $localStorage, $mdMedia, $mdDialog, CALENDAR_STATUS) {
         var nCalCtrl = this;
+
+        $scope.selectedIndex = 0;
 
         $scope.calendarStatus = CALENDAR_STATUS;
         var vmCalendar;
@@ -184,6 +248,78 @@ angular
         };
 
         nCalCtrl.addEvent = function (ev) {
+            $mdDialog
+                .show({
+                    controller: 'AddEventController',
+                    controllerAs: 'AEvtCtrl',
+                    templateUrl: 'partials/home.calendars.add-event.html',
+                    parent: angular.element(document.getElementById('event-table')),
+                    targetEvent: ev,
+                    clickOutsideToClose: true
+                })
+                .then(function (event) {
+                    vmCalendar.events.push(event);
+                });
+        };
+
+        nCalCtrl.setTabSelected = function (tab) {
+            $scope.selectedIndex = tab;
+        };
+    })
+    .controller('NewShowCandidateController', function ($scope, $state, $stateParams, $localStorage, $mdMedia, $mdDialog, CANDIDATES_STATUS) {
+        var nsCandCtrl = this;
+
+        $scope.candidatesStatus = CANDIDATES_STATUS;
+        var vmCalendar;
+        if ($state.current.name === 'home.calendars.new') {
+            vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar;
+            if (!vmCalendar) {
+                vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar = {
+                    status: CANDIDATES_STATUS.active.value,
+                    events: []
+                };
+            }
+        } else {
+            vmCalendar = $scope.vmCalendar = _.find($localStorage.calendars, {id: Number($stateParams.id)});
+            if (!vmCalendar) {
+                $mdDialog.show(
+                    $mdDialog.alert()
+                        .title('El Calendario no existe')
+                        .textContent('No existe ningun Calendario con el ID especificado')
+                        .ok('Aceptar')
+                ).then(function () {
+                    $state.go('home.calendars.list');
+                });
+            }
+        }
+
+        nsCandCtrl.save = function (calendarForm, vmCalendar) {
+            var calendars = $localStorage.calendars;
+            if (!calendars) {
+                calendars = $localStorage.calendars = [];
+            }
+
+            if ($state.current.name === 'home.calendars.new') {
+                vmCalendar.id = Date.now();
+                calendars.push(vmCalendar);
+                delete $localStorage.currentCalendar;
+                $state.go('home.calendars.show', {id: vmCalendar.id});
+            } else {
+                $mdDialog.show(
+                    $mdDialog.confirm()
+                        .title('Cambios guardados')
+                        .textContent('Sus cambios se han guardado correctamente')
+                        .ok('Aceptar')
+                ).then(function () {
+                });
+            }
+        };
+
+        nsCandCtrl.removeEvent = function (vmCalendar, $index) {
+            vmCalendar.events.splice($index, 1);
+        };
+
+        nsCandCtrl.addEvent = function (ev) {
             $mdDialog
                 .show({
                     controller: 'AddEventController',
