@@ -7,7 +7,6 @@ angular
         $mdThemingProvider.theme('default');
     })
     .config(function ($stateProvider, $urlRouterProvider) {
-
         $urlRouterProvider
             .otherwise(function ($injector, $location) {
                 var $state = $injector.get('$state');
@@ -46,6 +45,11 @@ angular
                         controller: 'ListCalendarController',
                         controllerAs: 'lCalCtrl'
                     }
+                },
+                resolve: {
+                    calendaries: function (Calendary) {
+                        return Calendary.list();
+                    }
                 }
             })
             .state('home.calendars.new', {
@@ -58,6 +62,14 @@ angular
                         templateUrl: 'partials/home.calendars.new.html',
                         controller: 'NewCalendarController',
                         controllerAs: 'nCalCtrl'
+                    }
+                },
+                resolve: {
+                    calendary: function ($localStorage, CALENDAR_STATUS) {
+                        return $localStorage.currentCalendar = {
+                            status: CALENDAR_STATUS.active.value,
+                            events: []
+                        };
                     }
                 }
             })
@@ -72,6 +84,22 @@ angular
                         controller: 'NewCalendarController',
                         controllerAs: 'nCalCtrl'
                     }
+                },
+                resolve: {
+                    calendary: function (Calendary, $state, $stateParams, $q, $mdDialog) {
+                        var promise = Calendary
+                            .one({id: Number($stateParams.id)});
+                        promise
+                            .catch(function (err) {
+                                $mdDialog.show(
+                                    $mdDialog.alert()
+                                        .title('El Calendario no existe')
+                                        .textContent('No existe ningun Calendario con el ID especificado')
+                                        .ok('Aceptar')
+                                );
+                            });
+                        return promise;
+                    }
                 }
             })
             .state('home.calendars.show.candidates', {
@@ -80,7 +108,7 @@ angular
                 views: {
                     'candidates@home.calendars.show': {
                         template: '<md-content class="md-padding" ui-view=""></md-content>',
-                        controller:['$scope', function ($scope) {
+                        controller: ['$scope', function ($scope) {
                             $scope.nCalCtrl.setTabSelected(1);
                         }]
                     }
@@ -104,21 +132,46 @@ angular
                         controller: 'NewShowCandidateController',
                         controllerAs: 'nCalCtrl'
                     }
+                },
+                candidate: function (CANDIDATES_STATUS) {
+                    return {
+                        status: CANDIDATES_STATUS.disqualify.value
+                    };
                 }
             })
             .state('home.calendars.show.candidates.show', {
-                url: 'ver/:id/',
+                url: 'ver/:candidateId/',
                 views: {
                     '@home.calendars.show.candidates': {
                         templateUrl: 'partials/home.calendars.new.html',
                         controller: 'NewCalendarController',
                         controllerAs: 'nCalCtrl'
                     }
+                },
+                resolve: {
+                    candidate: function (Candidate, $state, $stateParams) {
+                        var promise = Candidate
+                            .one({
+                                calendarId: Number($stateParams.id),
+                                id: Number($stateParams.candidateId)
+                            });
+                        promise
+                            .catch(function (err) {
+                                $mdDialog.show(
+                                    $mdDialog.alert()
+                                        .title('El Calendario no existe')
+                                        .textContent('No existe ningun Calendario con el ID especificado')
+                                        .ok('Aceptar')
+                                );
+                            });
+                        return promise;
+                    }
                 }
             });
     })
     .config(function ($authProvider) {
-        $authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
+        //$authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
+        $authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2_final_proyect/public/' : '/';
         $authProvider.loginUrl = $authProvider.loginUrl + 'index.php/api/authenticate';
     })
     .run(function ($rootScope, $auth, $state) {
@@ -155,196 +208,7 @@ angular
         cancel: {label: 'Cancelado', value: 'cc'}
     })
     .constant('CANDIDATES_STATUS', {
-        active: {label: 'Pendiente', value: 'p'},
-        finished: {label: 'Aprobado', value: 'a'},
-        cancel: {label: 'Inhabilitado', value: 'i'}
-    })
-    .controller('LoginController', function ($scope, $auth, $state) {
-        $scope.vmLogin = {};
-
-        this.login = function ($form, credentials) {
-            $auth
-                .login(credentials)
-                .then(function () {
-                    $state.go('home.calendars.list');
-                })
-                .catch(function () {
-                    $form.username.$setValidity('match', false);
-
-                    var $unwatch = $scope.$watch(function () {
-                        return JSON.stringify($scope.vmLogin);
-                    }, function (newValue, oldValue) {
-                        if (oldValue !== newValue) {
-                            $form.username.$setValidity('match', true);
-                            $unwatch();
-                        }
-                    });
-                });
-        };
-    })
-    .controller('ListCalendarController', function ($scope, $state, $stateParams, $localStorage, CALENDAR_STATUS) {
-        var nCalCtrl = this;
-
-        $scope.calendarStatus = CALENDAR_STATUS;
-        $scope.calendars = _.map($localStorage.calendars, function (calendar) {
-            calendar = _.cloneDeep(calendar);
-            calendar.status = _.find(CALENDAR_STATUS, {value: calendar.status});
-            return calendar;
-        });
-    })
-    .controller('NewCalendarController', function ($scope, $state, $stateParams, $localStorage, $mdMedia, $mdDialog, CALENDAR_STATUS) {
-        var nCalCtrl = this;
-
-        $scope.selectedIndex = 0;
-
-        $scope.calendarStatus = CALENDAR_STATUS;
-        var vmCalendar;
-        if ($state.current.name === 'home.calendars.new') {
-            vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar;
-            if (!vmCalendar) {
-                vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar = {
-                    status: CALENDAR_STATUS.active.value,
-                    events: []
-                };
-            }
-        } else {
-            vmCalendar = $scope.vmCalendar = _.find($localStorage.calendars, {id: Number($stateParams.id)});
-            if (!vmCalendar) {
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .title('El Calendario no existe')
-                        .textContent('No existe ningun Calendario con el ID especificado')
-                        .ok('Aceptar')
-                ).then(function () {
-                    $state.go('home.calendars.list');
-                });
-            }
-        }
-
-        nCalCtrl.save = function (calendarForm, vmCalendar) {
-            var calendars = $localStorage.calendars;
-            if (!calendars) {
-                calendars = $localStorage.calendars = [];
-            }
-
-            if ($state.current.name === 'home.calendars.new') {
-                vmCalendar.id = Date.now();
-                calendars.push(vmCalendar);
-                delete $localStorage.currentCalendar;
-                $state.go('home.calendars.show', {id: vmCalendar.id});
-            } else {
-                $mdDialog.show(
-                    $mdDialog.confirm()
-                        .title('Cambios guardados')
-                        .textContent('Sus cambios se han guardado correctamente')
-                        .ok('Aceptar')
-                ).then(function () {
-                });
-            }
-        };
-
-        nCalCtrl.removeEvent = function (vmCalendar, $index) {
-            vmCalendar.events.splice($index, 1);
-        };
-
-        nCalCtrl.addEvent = function (ev) {
-            $mdDialog
-                .show({
-                    controller: 'AddEventController',
-                    controllerAs: 'AEvtCtrl',
-                    templateUrl: 'partials/home.calendars.add-event.html',
-                    parent: angular.element(document.getElementById('event-table')),
-                    targetEvent: ev,
-                    clickOutsideToClose: true
-                })
-                .then(function (event) {
-                    vmCalendar.events.push(event);
-                });
-        };
-
-        nCalCtrl.setTabSelected = function (tab) {
-            $scope.selectedIndex = tab;
-        };
-    })
-    .controller('NewShowCandidateController', function ($scope, $state, $stateParams, $localStorage, $mdMedia, $mdDialog, CANDIDATES_STATUS) {
-        var nsCandCtrl = this;
-
-        $scope.candidatesStatus = CANDIDATES_STATUS;
-        var vmCalendar;
-        if ($state.current.name === 'home.calendars.new') {
-            vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar;
-            if (!vmCalendar) {
-                vmCalendar = $scope.vmCalendar = $localStorage.currentCalendar = {
-                    status: CANDIDATES_STATUS.active.value,
-                    events: []
-                };
-            }
-        } else {
-            vmCalendar = $scope.vmCalendar = _.find($localStorage.calendars, {id: Number($stateParams.id)});
-            if (!vmCalendar) {
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .title('El Calendario no existe')
-                        .textContent('No existe ningun Calendario con el ID especificado')
-                        .ok('Aceptar')
-                ).then(function () {
-                    $state.go('home.calendars.list');
-                });
-            }
-        }
-
-        nsCandCtrl.save = function (calendarForm, vmCalendar) {
-            var calendars = $localStorage.calendars;
-            if (!calendars) {
-                calendars = $localStorage.calendars = [];
-            }
-
-            if ($state.current.name === 'home.calendars.new') {
-                vmCalendar.id = Date.now();
-                calendars.push(vmCalendar);
-                delete $localStorage.currentCalendar;
-                $state.go('home.calendars.show', {id: vmCalendar.id});
-            } else {
-                $mdDialog.show(
-                    $mdDialog.confirm()
-                        .title('Cambios guardados')
-                        .textContent('Sus cambios se han guardado correctamente')
-                        .ok('Aceptar')
-                ).then(function () {
-                });
-            }
-        };
-
-        nsCandCtrl.removeEvent = function (vmCalendar, $index) {
-            vmCalendar.events.splice($index, 1);
-        };
-
-        nsCandCtrl.addEvent = function (ev) {
-            $mdDialog
-                .show({
-                    controller: 'AddEventController',
-                    controllerAs: 'AEvtCtrl',
-                    templateUrl: 'partials/home.calendars.add-event.html',
-                    parent: angular.element(document.getElementById('event-table')),
-                    targetEvent: ev,
-                    clickOutsideToClose: true
-                })
-                .then(function (event) {
-                    vmCalendar.events.push(event);
-                });
-        };
-    })
-    .controller('AddEventController', function ($scope, $mdDialog) {
-        var AEvtCtrl = this;
-        $scope.vmEvent = {
-            date: new Date()
-        };
-
-        AEvtCtrl.addEvent = function (vmEvent) {
-            $mdDialog.hide(vmEvent);
-        };
-
-        AEvtCtrl.closeDialog = function () {
-            $mdDialog.cancel();
-        };
+        pending: {label: 'Pendiente', value: 'p'},
+        aproved: {label: 'Aprobado', value: 'a'},
+        disqualify: {label: 'Inhabilitado', value: 'i'}
     });

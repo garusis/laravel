@@ -3,8 +3,8 @@
           ng-submit="candidateForm.$valid && nCalCtrl.save(candidateForm, vmCandidate)" novalidate>
         <div layout="row">
             <div flex="60" layout="column">
-                <div layout="row" style="margin-top: 30px">
-                    <md-input-container flex="50">
+                <div layout="row">
+                    <md-input-container flex="60">
                         <label for="cand_name">Nombre</label>
                         <input type="text" name="name" id="cand_name" required ng-model="vmCandidate.name">
                         <div ng-messages="candidateForm.name.$error"
@@ -12,7 +12,8 @@
                             <div ng-message="required">Este campo es requerido</div>
                         </div>
                     </md-input-container>
-                    <md-input-container flex="50">
+                    <div flex=""></div>
+                    <md-input-container flex="30">
                         <label for="cand_lot">#Sorteo</label>
                         <input type="text" name="lot" id="cand_lot" required ng-model="vmCandidate.lot">
                         <div ng-messages="candidateForm.lot.$error"
@@ -21,8 +22,8 @@
                         </div>
                     </md-input-container>
                 </div>
-                <div layout="row" style="margin-top: 30px">
-                    <md-input-container flex="50">
+                <div layout="row">
+                    <md-input-container flex="60">
                         <label for="cand_lastname">Apellido</label>
                         <input type="text" name="lastename" id="cand_lastname" required ng-model="vmCandidate.lastname">
                         <div ng-messages="candidateForm.lastname.$error"
@@ -30,7 +31,8 @@
                             <div ng-message="required">Este campo es requerido</div>
                         </div>
                     </md-input-container>
-                    <md-input-container flex="50">
+                    <div flex=""></div>
+                    <md-input-container flex="30">
                         <label for="cand_identification"># Documento</label>
                         <input type="text" name="identification" id="cand_identification" required
                                ng-model="vmCandidate.identification">
@@ -40,13 +42,13 @@
                         </div>
                     </md-input-container>
                 </div>
-                <div layout="row" style="margin-top: 30px">
-                    <md-input-container flex="50">
+                <div layout="row">
+                    <md-input-container flex="60">
                         <label for="cand_status">Estado</label>
                         <md-select name="status" id="cand_status" required="" ng-model="vmCandidate.status"
                                    placeholder="Seleccione el estado">
                             <md-option ng-value="status.value"
-                                       ng-repeat="(key, status) in candidateStatus">
+                                       ng-repeat="(key, status) in candidatesStatus">
                                 {{ status.label }}
                             </md-option>
                         </md-select>
@@ -55,72 +57,7 @@
                             <div ng-message="required">Debe seleccionar un estado</div>
                         </div>
                     </md-input-container>
-
                 </div>
-                <div layout="row">
-                    <md-input-container flex>
-                        <label for="name">Nombre</label>
-                        <input type="text" name="name" id="name" ng-model="vmCandidate.name"
-                               required>
-                        <div ng-messages="candidateForm.name.$error"
-                             ng-show="candidateForm.$submitted || candidateForm.name.$touched">
-                            <div ng-message="required">Este campo es requerido</div>
-                        </div>
-                    </md-input-container>
-                </div>
-                <div layout="row">
-                    <md-input-container flex>
-                        <label for="description">Descripción</label>
-                                    <textarea id="description" name="description" ng-model="vmCandidate.description"
-                                              required md-maxlength="150"></textarea>
-                        <div ng-messages="candidateForm.description.$error"
-                             ng-show="candidateForm.$submitted || candidateForm.description.$touched">
-                            <div ng-message="required">Este campo es requerido</div>
-                            <div ng-message="md-maxlength">Excede la cantidad de caracteres permitidos</div>
-                        </div>
-                    </md-input-container>
-                </div>
-                <md-card id="event-table" class="md-whiteframe-4dp" style="margin-top: 80px;">
-                    <md-toolbar class="md-table-toolbar md-default">
-                        <div class="md-toolbar-tools">
-                            <h2>Listado de Eventos</h2>
-                            <div flex></div>
-                            <md-button class="md-fab md-primary md-mini" aria-label="Agregar evento"
-                                       ng-click="nCalCtrl.addEvent($event)">
-                                <md-icon md-font-library="material-icons">add</md-icon>
-                            </md-button>
-                        </div>
-                    </md-toolbar>
-                    <md-table-container style="min-height: 200px">
-                        <table md-table md-row-select multiple>
-                            <thead md-head>
-                            <tr md-row>
-                                <th md-column>
-                                    <span>Fecha</span></th>
-                                <th md-column>
-                                    <span>Evento</span>
-                                </th>
-                                <th md-column md-numeric>
-                                    <span>Acciones</span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody md-body>
-                            <tr md-row md-select="vmCandidate.events" md-select-id="name" md-auto-select
-                                ng-repeat="event in vmCandidate.events | allAsDate:'date' | orderBy:'date'">
-                                <td md-cell>{{event.date | date:'dd / MM / yyyy'}}</td>
-                                <td md-cell>{{event.name}}</td>
-                                <td md-cell>
-                                    <md-button class="md-fab md-warn md-mini" aria-label="Agregar evento"
-                                               ng-click="nCalCtrl.removeEvent(vmCandidate, $index)">
-                                        <md-icon md-font-library="material-icons">delete</md-icon>
-                                    </md-button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </md-table-container>
-                </md-card>
             </div>
             <div flex="40" layout="column">
                 <div layout="row">
