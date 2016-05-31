@@ -2,7 +2,10 @@
  * Created by garusis on 16/05/16.
  */
 angular
-    .module('sw2', ['ngMaterial', 'satellizer', 'ui.router', 'ngMessages', 'md.data.table', 'ngStorage', 'angular-loading-bar'])
+    .module('sw2', [
+        'ngMaterial', 'satellizer', 'ui.router', 'ngMessages', 'md.data.table',
+        'ngStorage', 'angular-loading-bar', 'restangular', 'lfNgMdFileInput'
+    ])
     .config(function ($mdThemingProvider) {
         $mdThemingProvider.theme('default');
     })
@@ -48,7 +51,7 @@ angular
                 },
                 resolve: {
                     calendaries: function (Calendary) {
-                        return Calendary.list();
+                        return Calendary.getList();
                     }
                 }
             })
@@ -65,11 +68,16 @@ angular
                     }
                 },
                 resolve: {
-                    calendary: function ($localStorage, CALENDAR_STATUS) {
-                        return $localStorage.currentCalendar = {
-                            status: CALENDAR_STATUS.active.value,
-                            events: []
-                        };
+                    currentCalendary: function ($localStorage, CALENDAR_STATUS) {
+                        var calendary = $localStorage.currentCalendar;
+                        if (!calendary) {
+                            calendary = $localStorage.currentCalendar = {
+                                status: CALENDAR_STATUS.active.value,
+                                events: [],
+                                minutes: []
+                            };
+                        }
+                        return calendary;
                     }
                 }
             })
@@ -86,9 +94,8 @@ angular
                     }
                 },
                 resolve: {
-                    calendary: function (Calendary, $state, $stateParams, $q, $mdDialog) {
-                        var promise = Calendary
-                            .one({id: Number($stateParams.id)});
+                    currentCalendary: function (Calendary, $state, $stateParams, CALENDAR_STATUS, $mdDialog) {
+                        var promise = Calendary.get($stateParams.id);
                         promise
                             .catch(function (err) {
                                 $mdDialog.show(
@@ -119,8 +126,13 @@ angular
                 views: {
                     '@home.calendars.show.candidates': {
                         templateUrl: 'partials/home.calendars.candidates.list.html',
-                        controller: 'ListCalendarController',
-                        controllerAs: 'lCalCtrl'
+                        controller: 'ListCandidateController',
+                        controllerAs: 'lCandCtrl'
+                    }
+                },
+                resolve: {
+                    candidates: function (Calendary, $stateParams) {
+                        return Calendary.getFrom($stateParams.id).candidates().getList();
                     }
                 }
             })
@@ -133,41 +145,40 @@ angular
                         controllerAs: 'nCalCtrl'
                     }
                 },
-                candidate: function (CANDIDATES_STATUS) {
-                    return {
-                        status: CANDIDATES_STATUS.disqualify.value
-                    };
+                resolve: {
+                    candidate: function (CANDIDATES_STATUS) {
+                        return {
+                            status: CANDIDATES_STATUS.pending.value
+                        };
+                    }
                 }
             })
             .state('home.calendars.show.candidates.show', {
                 url: 'ver/:candidateId/',
                 views: {
                     '@home.calendars.show.candidates': {
-                        templateUrl: 'partials/home.calendars.new.html',
-                        controller: 'NewCalendarController',
+                        templateUrl: 'partials/home.calendars.candidates.new.html',
+                        controller: 'NewShowCandidateController',
                         controllerAs: 'nCalCtrl'
                     }
                 },
                 resolve: {
-                    candidate: function (Candidate, $state, $stateParams) {
-                        var promise = Candidate
-                            .one({
-                                calendarId: Number($stateParams.id),
-                                id: Number($stateParams.candidateId)
-                            });
-                        promise
-                            .catch(function (err) {
-                                $mdDialog.show(
-                                    $mdDialog.alert()
-                                        .title('El Calendario no existe')
-                                        .textContent('No existe ningun Calendario con el ID especificado')
-                                        .ok('Aceptar')
-                                );
-                            });
-                        return promise;
+                    candidate: function (Calendary, $stateParams) {
+                        return Calendary
+                            .getFrom($stateParams.id)
+                            .candidates()
+                            .get($stateParams.candidateId)
                     }
                 }
             });
+    })
+    .config(function (RestangularProvider) {
+        var baseUrl = location.hostname === 'localhost' ? 'http://localhost/sw2_final_proyect/public/' : '/';
+        baseUrl = baseUrl + 'index.php/api';
+        RestangularProvider.setBaseUrl(baseUrl);
+        RestangularProvider.setRequestInterceptor(function (elem, operation) {
+            return operation === "remove" ? null : elem;
+        });
     })
     .config(function ($authProvider) {
         //$authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
@@ -185,6 +196,10 @@ angular
                 e.preventDefault();
                 $state.go('home.calendars.list');
             }
+        });
+
+        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+            console.error(error);
         });
     })
     .filter('allAsDate', function () {

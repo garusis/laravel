@@ -1,30 +1,28 @@
 <md-toolbar class="md-menu-toolbar">
     <div class="md-toolbar-tools">
-        <span>Listado de Candidatos</span>
+        <span>Listado de candidatos</span>
         <span flex></span>
-        <a class="md-button md-raised md-primary md-hue-3" style="color: white"
-           ui-sref="home.calendars.show.candidates.new({id:vmCalendar.id})" aria-label="Crear Nuevo">
+        <a class="md-button md-raised md-primary md-hue-3" style="color: white" ui-sref="home.calendars.show.candidates.new" aria-label="Crear Nuevo">
             Crear Nuevo
         </a>
     </div>
 </md-toolbar>
 <md-table-container>
-    <table md-table ng-model="calendars">
-        <thead md-head>
+    <table md-table ng-model="candidates">
+        <thead md-head >
         <tr md-row>
-            <th md-column><span>#Documento</span></th>
-            <th md-column><span>Nombres</span></th>
-            <th md-column>#Sorteo</th>
-            <th md-column>Estado</th>
+            <th md-column ><span>#Identificación</span></th>
+            <th md-column ><span>Nombre</span></th>
+            <th md-column >#Sorteo</th>
+            <th md-column >Estado</th>
         </tr>
         </thead>
         <tbody md-body>
         <tr md-row ng-repeat="candidate in candidates">
-            <td md-cell><a ui-sref="home.calendars.candidates.show({id:calendar.id})">{{calendar.noElection}}</a>
-            </td>
-            <td md-cell>{{calendar.name}}</td>
-            <td md-cell>{{calendar.description}}</td>
-            <td md-cell>{{calendar.status.label}}</td>
+            <td md-cell><a ui-sref="home.calendars.show.candidates.show({id:candidate.calendar_id, candidateId:candidate.id})">{{candidate.identification}}</a></td>
+            <td md-cell>{{candidate.name}} {{candidate.lastname}}</td>
+            <td md-cell>{{candidate.lot}}</td>
+            <td md-cell>{{candidate.status.label}}</td>
         </tr>
         </tbody>
     </table>

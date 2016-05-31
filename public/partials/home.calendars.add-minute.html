@@ -1,0 +1,51 @@
+<md-dialog aria-label="Agregar minuteo" ng-cloak>
+    <form id="form-minute" name="minuteForm"
+          ng-submit="minuteForm.$valid && AMinCtrl.addMinute(vmMinute)">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Agregar Acta</h2>
+                <span flex></span>
+                <md-button class="md-fab md-primary md-hue-1 md-mini" ng-click="AMinCtrl.closeDialog()">
+                    <md-icon md-font-library="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" style="width: 500px">
+                <div layout="row">
+                    <md-input-container flex>
+                        <label for="minute_id">#ID</label>
+                        <input type="text" name="id" id="minute_id" ng-model="vmMinute.official_id" required>
+                        <div ng-messages="minuteForm.name.$error"
+                             ng-show="minuteForm.$submitted || minuteForm.name.$touched">
+                            <div ng-message="required">Este campo es requerido</div>
+                        </div>
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container flex>
+                        <label for="minute_description">Descripción</label>
+                        <input type="text" name="id" id="minute_description" ng-model="vmMinute.description" required>
+                        <div ng-messages="minuteForm.description.$error"
+                             ng-show="minuteForm.$submitted || minuteForm.description.$touched">
+                            <div ng-message="required">Este campo es requerido</div>
+                        </div>
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container flex>
+                        <lf-ng-md-file-input lf-files="files" progress></lf-ng-md-file-input>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button type="submit" class="md-raised md-primary md-hue-1">
+                Agregar
+            </md-button>
+            <md-button class="md-raised md-warn md-hue-2" ng-click="AMinCtrl.closeDialog()">
+                Cancelar
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

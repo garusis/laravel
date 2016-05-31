@@ -26,7 +26,7 @@ angular
                 });
         };
     })
-    .controller('ListCalendarController', function ($scope, $state, $stateParams, $localStorage, calendaries, CALENDAR_STATUS) {
+    .controller('ListCalendarController', function ($scope, calendaries, CALENDAR_STATUS) {
         var nCalCtrl = this;
         $scope.calendarStatus = CALENDAR_STATUS;
         $scope.calendars = _.map(calendaries, function (calendar) {
@@ -34,23 +34,34 @@ angular
             return calendar;
         });
     })
-    .controller('NewCalendarController', function ($scope, $state, $mdMedia, $mdDialog, calendary, Calendary, Candidate, CALENDAR_STATUS) {
+    .controller('NewCalendarController', function ($scope, $state, $mdMedia, $mdDialog, $localStorage, currentCalendary, Calendary, CALENDAR_STATUS) {
         var nCalCtrl = this;
 
         $scope.selectedIndex = 0;
 
         $scope.calendarStatus = CALENDAR_STATUS;
-        var vmCalendar = $scope.vmCalendar = calendary;
+        var vmCalendar = $scope.vmCalendar = currentCalendary;
+
+        var removedEvents = [];
+        var removedMinutes = [];
 
         nCalCtrl.save = function (calendarForm, vmCalendar) {
             var promise;
             if (vmCalendar.id) {
-                promise = Calendary
-                    .update({id: vmCalendar.id}, vmCalendar);
+                promise = vmCalendar
+                    .put()
+                    .then(function () {
+                        if (removedEvents.length) {
+                            return _.map(removedEvents, function (eventId) {
+                                return Calendary.getFrom(vmCalendar.id).events().remove(eventId);
+                            });
+                        }
+                    });
             } else {
                 promise = Calendary
-                    .create(vmCalendar)
-                    .then(function () {
+                    .post(vmCalendar)
+                    .then(function (vmCalendar) {
+                        delete $localStorage.currentCalendar;
                         $state.go('home.calendars.show', {id: vmCalendar.id});
                     });
             }
@@ -65,8 +76,11 @@ angular
                 })
         };
 
-        nCalCtrl.removeEvent = function (vmCalendar, $index) {
-            vmCalendar.events.splice($index, 1);
+        nCalCtrl.removeEvent = function (vmCalendar, event) {
+            var removed = _.remove(vmCalendar.events, {$$hashKey: event.$$hashKey})[0];
+            if (removed.id) {
+                removedEvents.push(removed.id);
+            }
         };
 
         nCalCtrl.addEvent = function (ev) {
@@ -84,16 +98,40 @@ angular
                 });
         };
 
+        nCalCtrl.addMinute = function (ev) {
+            $mdDialog
+                .show({
+                    controller: 'AddMinuteController',
+                    controllerAs: 'AMinCtrl',
+                    templateUrl: 'partials/home.calendars.add-minute.html',
+                    targetEvent: ev,
+                    clickOutsideToClose: true
+                })
+                .then(function (event) {
+                    vmCalendar.events.push(event);
+                });
+        };
+
+        nCalCtrl.removeMinute = function (vmCalendar, minute) {
+            var removed = _.remove(vmCalendar.minutes, {$$hashKey: minute.$$hashKey})[0];
+            if (removed.id) {
+                removedMinutes.push(removed.id);
+            }
+        };
+
         nCalCtrl.setTabSelected = function (tab) {
             $scope.selectedIndex = tab;
         };
-
-        nCalCtrl.addCalendar = function (vmCandidate) {
-            return Candidate
-                .create($stateParams.id, vmCandidate);
-        };
     })
-    .controller('NewShowCandidateController', function ($scope, $state, $stateParams, $mdMedia, $mdDialog, candidate, Candidate, CANDIDATES_STATUS) {
+    .controller('ListCandidateController', function ($scope, candidates, CANDIDATES_STATUS) {
+        var nCalCtrl = this;
+        $scope.candidatesStatus = CANDIDATES_STATUS;
+        $scope.candidates = _.map(candidates, function (canditate) {
+            canditate.status = _.find(CANDIDATES_STATUS, {value: canditate.status});
+            return canditate;
+        });
+    })
+    .controller('NewShowCandidateController', function ($scope, $state, $stateParams, $mdMedia, $mdDialog, candidate, Calendary, CANDIDATES_STATUS) {
         var nsCandCtrl = this;
 
         $scope.candidatesStatus = CANDIDATES_STATUS;
@@ -102,11 +140,12 @@ angular
         nsCandCtrl.save = function (candidateForm, vmCandidate) {
             var promise;
             if (vmCandidate.id) {
-                promise = Candidate.update({id: vmCandidate.id}, vmCandidate);
+                promise = candidate.put();
             } else {
-                promise = $scope.nCalCtrl
-                    .addCalendar()
-                    .then(function () {
+                promise = Calendary
+                    .getFrom($stateParams.id)
+                    .candidates().post(vmCandidate)
+                    .then(function (vmCandidate) {
                         $state.go('home.calendars.show.candidates.show', {id: vmCandidate.id});
                     });
             }
@@ -134,4 +173,24 @@ angular
         AEvtCtrl.closeDialog = function () {
             $mdDialog.cancel();
         };
+    })
+    .controller('AddMinuteController', function ($scope, Files, $mdDialog) {
+        var AEvtCtrl = this;
+        $scope.vmEvent = {
+            date: new Date(),
+            file: null
+        };
+
+        AEvtCtrl.addEvent = function (vmEvent) {
+            $mdDialog.hide(vmEvent);
+        };
+
+        AEvtCtrl.closeDialog = function () {
+            $mdDialog.cancel();
+        };
+
+        $scope.$watch('vmEvent.file', function (newVal) {
+            if (!newVal) return;
+            
+        });
     });

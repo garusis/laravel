@@ -22,3 +22,12 @@ body {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+.m0 {
+    margin: 0!important;
+}
+
+.mh1 {
+    margin-top: 5px!important;
+    margin-bottom: 5px!important;
+}

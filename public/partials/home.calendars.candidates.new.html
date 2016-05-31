@@ -25,7 +25,7 @@
                 <div layout="row">
                     <md-input-container flex="60">
                         <label for="cand_lastname">Apellido</label>
-                        <input type="text" name="lastename" id="cand_lastname" required ng-model="vmCandidate.lastname">
+                        <input type="text" name="lastname" id="cand_lastname" required ng-model="vmCandidate.lastname">
                         <div ng-messages="candidateForm.lastname.$error"
                              ng-show="candidateForm.$submitted || candidateForm.lastname.$touched">
                             <div ng-message="required">Este campo es requerido</div>
@@ -57,6 +57,77 @@
                             <div ng-message="required">Debe seleccionar un estado</div>
                         </div>
                     </md-input-container>
+                </div>
+                <div flex=""></div>
+                <div layout="row" style="margin-top: 80px;">
+                    <md-card class="md-padding md-whiteframe-4dp" flex="50">
+                        <md-toolbar class="md-table-toolbar md-default">
+                            <div class="md-toolbar-tools" style="">
+                                <h5>Testigo 1</h5>
+                            </div>
+                        </md-toolbar>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness1FirstName">Nombre</label>
+                            <input type="text" name="witness1FirstName" id="cand_witness1FirstName" required
+                                   ng-model="vmCandidate.witness1FirstName">
+                            <div ng-messages="candidateForm.witness1FirstName.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness1FirstName.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness1LastName">Apellido</label>
+                            <input type="text" name="witness1LastName" id="cand_witness1LastName" required
+                                   ng-model="vmCandidate.witness1LastName">
+                            <div ng-messages="candidateForm.witness1LastName.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness1LastName.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness1Identification">Identificación</label>
+                            <input type="text" name="witness1Identification" id="cand_witness1Identification" required
+                                   ng-model="vmCandidate.witness1Identification">
+                            <div ng-messages="candidateForm.witness1Identification.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness1Identification.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                    </md-card>
+                    <md-card class="md-padding md-whiteframe-4dp" flex="50">
+                        <md-toolbar class="md-table-toolbar md-default">
+                            <div class="md-toolbar-tools">
+                                <h5>Testigo 2</h5>
+                            </div>
+                        </md-toolbar>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness2FirstName">Nombre</label>
+                            <input type="text" name="witness2FirstName" id="cand_witness2FirstName" required
+                                   ng-model="vmCandidate.witness2FirstName">
+                            <div ng-messages="candidateForm.witness2FirstName.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness2FirstName.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness2LastName">Apellido</label>
+                            <input type="text" name="witness2LastName" id="cand_witness2LastName" required
+                                   ng-model="vmCandidate.witness2LastName">
+                            <div ng-messages="candidateForm.witness2LastName.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness2LastName.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="" flex>
+                            <label for="cand_witness2Identification">Identificación</label>
+                            <input type="text" name="witness2Identification" id="cand_witness2Identification" required
+                                   ng-model="vmCandidate.witness2Identification">
+                            <div ng-messages="candidateForm.witness2Identification.$error"
+                                 ng-show="candidateForm.$submitted || candidateForm.witness2Identification.$touched">
+                                <div ng-message="required">Este campo es requerido</div>
+                            </div>
+                        </md-input-container>
+                    </md-card>
                 </div>
             </div>
             <div flex="40" layout="column">

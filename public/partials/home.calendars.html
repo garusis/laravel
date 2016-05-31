@@ -1,5 +1,8 @@
-<md-toolbar class="md-default breadcrumbs">
-    <div ui-view="breadcrumbs">
+<md-toolbar class="md-default breadcrumbs" layout="row">
+    <a flex flex-offset="5" ui-sref="home.calendars.list" class="docs-logo">
+        <img src="img/logo.png" style="max-height: 50px" alt="">
+    </a>
+    <div flex="" ui-view="breadcrumbs">
     </div>
 </md-toolbar>
 <md-content flex layout-padding ui-view="content">
