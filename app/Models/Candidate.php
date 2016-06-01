@@ -7,4 +7,8 @@ class Candidate extends Model {
     protected $guarded = ['id'];
 	//
 
+    public function files()
+    {
+        return $this->hasMany('App\Models\CandidateFile');
+    }
 }

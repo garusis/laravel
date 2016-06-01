@@ -53,7 +53,12 @@ angular
         var resource = 'files';
         return {
             upload: function (file) {
-                debugger
+                var fd = new FormData();
+                fd.append('file', file.lfFile);
+
+                return Restangular.all('files')
+                    .withHttpConfig({transformRequest: angular.identity})
+                    .customPOST(fd, undefined, undefined, {'Content-Type': undefined});
             }
         };
     })
@@ -66,8 +71,22 @@ angular
                 events: function () {
                     return new AppRelation(Restangular.one(resource, id), 'events');
                 },
+                minutes: function () {
+                    return new AppRelation(Restangular.one(resource, id), 'minutes');
+                },
+                files: function () {
+                    return new AppRelation(Restangular.one(resource, id), 'files');
+                },
                 candidates: function () {
-                    return new AppRelation(Restangular.one(resource, id), 'candidates');
+                    var relation = new AppRelation(Restangular.one(resource, id), 'candidates');
+                    relation.getFrom = function (candidateId) {
+                        return {
+                            files: function () {
+                                return new AppRelation(relation.chain.one('candidates', candidateId), 'files');
+                            }
+                        };
+                    };
+                    return relation;
                 }
             };
         };

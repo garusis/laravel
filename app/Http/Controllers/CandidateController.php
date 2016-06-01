@@ -51,7 +51,7 @@ class CandidateController extends Controller
      */
     public function show($calendarId, $candidateId)
     {
-        return Candidate::find($candidateId)->first();
+        return Candidate::find($candidateId)->with('files')->first();
     }
 
     /**

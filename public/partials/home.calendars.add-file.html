@@ -1,0 +1,42 @@
+<md-dialog aria-label="Agregar Archivo" ng-cloak>
+    <form id="form-file" name="fileForm"
+          ng-submit="fileForm.$valid && AMinCtrl.addFile(vmFile)">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Agregar Documento o Soporte</h2>
+                <span flex></span>
+                <md-button class="md-fab md-primary md-hue-1 md-mini" ng-click="AMinCtrl.closeDialog()">
+                    <md-icon md-font-library="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" style="width: 500px">
+                <div layout="row">
+                    <md-input-container flex>
+                        <label for="file_description">Descripción</label>
+                        <input type="text" name="id" id="file_description" ng-model="vmFile.description" required>
+                        <div ng-messages="fileForm.description.$error"
+                             ng-show="fileForm.$submitted || fileForm.description.$touched">
+                            <div ng-message="required">Este campo es requerido</div>
+                        </div>
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container flex>
+                        <lf-ng-md-file-input lf-files="files"></lf-ng-md-file-input>
+                        <input type="hidden" name="filePath" ng-model="vmFile.filePath" required />
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button type="submit" ng-disabled="fileForm.$invalid" class="md-raised md-primary md-hue-1">
+                Agregar
+            </md-button>
+            <md-button class="md-raised md-warn md-hue-2" ng-click="AMinCtrl.closeDialog()">
+                Cancelar
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

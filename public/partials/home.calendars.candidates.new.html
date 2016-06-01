@@ -136,11 +136,9 @@
                     <md-button type="submit" class="md-raised md-primary" aria-label="Crear Nuevo">
                         Guardar
                     </md-button>
-                    <md-button class="btn-default md-raised">Exportar</md-button>
                 </div>
-                <div flex=""></div>
                 <div layout="row">
-                    <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp"
+                    <md-card ng-show="!vmCandidate.id" flex="70" flex-offset="30" class="md-whiteframe-4dp"
                              style="margin-top: 20px; height: 200px">
                         <div flex=""></div>
                         <h3 style="text-align: center">
@@ -148,15 +146,51 @@
                         </h3>
                         <div flex=""></div>
                     </md-card>
-                </div>
-                <div layout="row">
-                    <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp"
-                             style="margin-top: 20px; height: 200px">
-                        <div flex=""></div>
-                        <h3 style="text-align: center">
-                            Listado de Actas
-                        </h3>
-                        <div flex=""></div>
+                    <md-card ng-show="vmCandidate.id" flex="80" flex-offset="20" class="md-whiteframe-4dp"
+                             style="margin-top: 20px; min-height: 200px">
+                        <md-toolbar class="md-table-toolbar md-default">
+                            <div class="md-toolbar-tools">
+                                <h2>Documentos y Soportes</h2>
+                                <div flex></div>
+                                <md-button class="md-fab md-primary md-mini" aria-label="Agregar Acta"
+                                           ng-click="nCalCtrl.addFile($event)">
+                                    <md-icon md-font-library="material-icons">add</md-icon>
+                                </md-button>
+                            </div>
+                        </md-toolbar>
+                        <md-table-container style="min-height: 200px">
+                            <table id="file-table" md-table ng-model="vmCandidate.files">
+                                <thead md-head>
+                                <tr md-row>
+                                    <th md-column>
+                                        <span>Descripción</span>
+                                    </th>
+                                    <th md-column md-numeric>
+                                        <span>Acciones</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody md-body>
+                                <tr md-row md-select="vmCandidate.files" md-select-id="calend_files"
+                                    md-auto-select
+                                    ng-repeat="file in vmCandidate.files | orderBy:'official_id'">
+                                    <td md-cell>{{file.description}}</td>
+                                    <td md-cell>
+                                        <a ng-href="{{file.filePath}}" download="" type="button"
+                                           class="md-button md-fab md-primary md-mini"
+                                           aria-label="Agregar evento">
+                                            <md-icon md-font-library="material-icons">get_app</md-icon>
+                                        </a>
+                                        <md-button class="md-fab md-warn md-mini"
+                                                   aria-label="Agregar Archivo"
+                                                   ng-click="nCalCtrl.removeFile(vmCandidate, file)">
+                                            <md-icon md-font-library="material-icons">delete</md-icon>
+                                        </md-button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </md-table-container>
                     </md-card>
                 </div>
             </div>

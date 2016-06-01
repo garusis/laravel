@@ -111,17 +111,55 @@
                                 <md-button type="submit" class="md-raised md-primary" aria-label="Crear Nuevo">
                                     Guardar
                                 </md-button>
-                                <md-button class="btn-default md-raised">Exportar</md-button>
+                                <a class="md-button btn-default md-raised" ng-href="index.php/api/calendars/{{vmCalendar.id}}/excel" target="_blank">Exportar</a>
                             </div>
                             <div flex=""></div>
                             <div layout="row">
-                                <md-card flex="70" flex-offset="30" class="md-whiteframe-4dp"
-                                         style="margin-top: 20px; height: 200px">
-                                    <div flex=""></div>
-                                    <h3 style="text-align: center">
-                                        Documentos y Soportes
-                                    </h3>
-                                    <div flex=""></div>
+                                <md-card flex="80" flex-offset="20" class="md-whiteframe-4dp"
+                                         style="margin-top: 20px; min-height: 200px">
+                                    <md-toolbar class="md-table-toolbar md-default">
+                                        <div class="md-toolbar-tools">
+                                            <h2>Documentos y Soportes</h2>
+                                            <div flex></div>
+                                            <md-button class="md-fab md-primary md-mini" aria-label="Agregar Acta"
+                                                       ng-click="nCalCtrl.addFile($event)">
+                                                <md-icon md-font-library="material-icons">add</md-icon>
+                                            </md-button>
+                                        </div>
+                                    </md-toolbar>
+                                    <md-table-container style="min-height: 200px">
+                                        <table id="file-table" md-table ng-model="vmCalendar.files">
+                                            <thead md-head>
+                                            <tr md-row>
+                                                <th md-column>
+                                                    <span>Descripción</span>
+                                                </th>
+                                                <th md-column md-numeric>
+                                                    <span>Acciones</span>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody md-body>
+                                            <tr md-row md-select="vmCalendar.files" md-select-id="calend_files"
+                                                md-auto-select
+                                                ng-repeat="file in vmCalendar.files | orderBy:'official_id'">
+                                                <td md-cell>{{file.description}}</td>
+                                                <td md-cell>
+                                                    <a ng-href="{{file.filePath}}" download="" type="button"
+                                                       class="md-button md-fab md-primary md-mini"
+                                                       aria-label="Agregar evento">
+                                                        <md-icon md-font-library="material-icons">get_app</md-icon>
+                                                    </a>
+                                                    <md-button class="md-fab md-warn md-mini"
+                                                               aria-label="Agregar Archivo"
+                                                               ng-click="nCalCtrl.removeFile(vmCalendar, file)">
+                                                        <md-icon md-font-library="material-icons">delete</md-icon>
+                                                    </md-button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </md-table-container>
                                 </md-card>
                             </div>
                             <div layout="row">
@@ -142,7 +180,7 @@
                                             <thead md-head>
                                             <tr md-row>
                                                 <th md-column>
-                                                    <span>Fecha</span></th>
+                                                    <span>#ID</span></th>
                                                 <th md-column>
                                                     <span>Descripción</span>
                                                 </th>
@@ -154,13 +192,18 @@
                                             <tbody md-body>
                                             <tr md-row md-select="vmCalendar.minutes" md-select-id="calend_minutes"
                                                 md-auto-select
-                                                ng-repeat="event in vmCalendar.minutes | allAsDate:'date' | orderBy:'date'">
-                                                <td md-cell>{{event.date | date:'dd / MM / yyyy'}}</td>
-                                                <td md-cell>{{event.description}}</td>
+                                                ng-repeat="minute in vmCalendar.minutes | orderBy:'official_id'">
+                                                <td md-cell>{{minute.official_id}}</td>
+                                                <td md-cell>{{minute.description}}</td>
                                                 <td md-cell>
+                                                    <a ng-href="{{minute.filePath}}" download="" type="button"
+                                                       class="md-button md-fab md-primary md-mini"
+                                                       aria-label="Agregar evento">
+                                                        <md-icon md-font-library="material-icons">get_app</md-icon>
+                                                    </a>
                                                     <md-button class="md-fab md-warn md-mini"
                                                                aria-label="Agregar evento"
-                                                               ng-click="nCalCtrl.removeMinute(vmCalendar, event)">
+                                                               ng-click="nCalCtrl.removeMinute(vmCalendar, minute)">
                                                         <md-icon md-font-library="material-icons">delete</md-icon>
                                                     </md-button>
                                                 </td>
@@ -183,11 +226,6 @@
         <md-tab ng-disabled="!vmCalendar.id" label="Mesas">
             <md-content class="md-padding">
                 Mesas
-            </md-content>
-        </md-tab>
-        <md-tab ng-disabled="!vmCalendar.id" label="Mesas">
-            <md-content class="md-padding">
-                Escrutadores
             </md-content>
         </md-tab>
     </md-tabs>

@@ -44,6 +44,7 @@ angular
 
         var removedEvents = [];
         var removedMinutes = [];
+        var removedFiles = [];
 
         nCalCtrl.save = function (calendarForm, vmCalendar) {
             var promise;
@@ -51,11 +52,26 @@ angular
                 promise = vmCalendar
                     .put()
                     .then(function () {
+                        var promises = [];
                         if (removedEvents.length) {
-                            return _.map(removedEvents, function (eventId) {
-                                return Calendary.getFrom(vmCalendar.id).events().remove(eventId);
+                            _.forEach(removedEvents, function (eventId) {
+                                var p = Calendary.getFrom(vmCalendar.id).events().remove(eventId);
+                                promises.push(p);
                             });
                         }
+                        if (removedMinutes.length) {
+                            _.forEach(removedMinutes, function (minuteId) {
+                                var p = Calendary.getFrom(vmCalendar.id).minutes().remove(minuteId);
+                                promises.push(p);
+                            });
+                        }
+                        if (removedFiles.length) {
+                            _.forEach(removedFiles, function (eventId) {
+                                var p = Calendary.getFrom(vmCalendar.id).files().remove(eventId);
+                                promises.push(p);
+                            });
+                        }
+                        return promises;
                     });
             } else {
                 promise = Calendary
@@ -107,8 +123,8 @@ angular
                     targetEvent: ev,
                     clickOutsideToClose: true
                 })
-                .then(function (event) {
-                    vmCalendar.events.push(event);
+                .then(function (minute) {
+                    vmCalendar.minutes.push(minute);
                 });
         };
 
@@ -116,6 +132,27 @@ angular
             var removed = _.remove(vmCalendar.minutes, {$$hashKey: minute.$$hashKey})[0];
             if (removed.id) {
                 removedMinutes.push(removed.id);
+            }
+        };
+
+        nCalCtrl.addFile = function (ev) {
+            $mdDialog
+                .show({
+                    controller: 'AddFileController',
+                    controllerAs: 'AMinCtrl',
+                    templateUrl: 'partials/home.calendars.add-file.html',
+                    targetEvent: ev,
+                    clickOutsideToClose: true
+                })
+                .then(function (file) {
+                    vmCalendar.files.push(file);
+                });
+        };
+
+        nCalCtrl.removeFile = function (vmCalendar, file) {
+            var removed = _.remove(vmCalendar.files, {$$hashKey: file.$$hashKey})[0];
+            if (removed.id) {
+                removedFiles.push(removed.id);
             }
         };
 
@@ -139,14 +176,20 @@ angular
 
         nsCandCtrl.save = function (candidateForm, vmCandidate) {
             var promise;
+            var files = vmCandidate.files;
             if (vmCandidate.id) {
+                delete vmCandidate.files;
                 promise = candidate.put();
+                vmCandidate.files = files;
             } else {
                 promise = Calendary
                     .getFrom($stateParams.id)
                     .candidates().post(vmCandidate)
                     .then(function (vmCandidate) {
-                        $state.go('home.calendars.show.candidates.show', {id: vmCandidate.id});
+                        $state.go('home.calendars.show.candidates.show', {
+                            id: vmCandidate.calendar_id,
+                            candidateId: vmCandidate.id
+                        });
                     });
             }
             promise
@@ -158,6 +201,27 @@ angular
                             .ok('Aceptar')
                     )
                 });
+        };
+
+        nsCandCtrl.addFile = function (ev) {
+            $mdDialog
+                .show({
+                    controller: 'AddFileController',
+                    controllerAs: 'AMinCtrl',
+                    templateUrl: 'partials/home.calendars.add-file.html',
+                    targetEvent: ev,
+                    clickOutsideToClose: true
+                })
+                .then(function (file) {
+                    vmCandidate.files.push(file);
+                });
+        };
+
+        nsCandCtrl.removeFile = function (vmCalendar, file) {
+            var removed = _.remove(vmCalendar.files, {$$hashKey: file.$$hashKey})[0];
+            if (removed.id) {
+
+            }
         };
     })
     .controller('AddEventController', function ($scope, $mdDialog) {
@@ -176,21 +240,43 @@ angular
     })
     .controller('AddMinuteController', function ($scope, Files, $mdDialog) {
         var AEvtCtrl = this;
-        $scope.vmEvent = {
-            date: new Date(),
-            file: null
-        };
+        $scope.vmMinute = {};
 
-        AEvtCtrl.addEvent = function (vmEvent) {
-            $mdDialog.hide(vmEvent);
+        AEvtCtrl.addMinute = function (vmMinute) {
+            $mdDialog.hide(vmMinute);
         };
 
         AEvtCtrl.closeDialog = function () {
             $mdDialog.cancel();
         };
 
-        $scope.$watch('vmEvent.file', function (newVal) {
-            if (!newVal) return;
-            
+        $scope.$watchCollection('files', function (files) {
+            if (!$scope.files || !$scope.files.length) return;
+            Files
+                .upload($scope.files[0])
+                .then(function (filePath) {
+                    $scope.vmMinute.filePath = filePath;
+                });
+        });
+    })
+    .controller('AddFileController', function ($scope, Files, $mdDialog) {
+        var AEvtCtrl = this;
+        $scope.vmFile = {};
+
+        AEvtCtrl.addFile = function (vmFile) {
+            $mdDialog.hide(vmFile);
+        };
+
+        AEvtCtrl.closeDialog = function () {
+            $mdDialog.cancel();
+        };
+
+        $scope.$watchCollection('files', function (files) {
+            if (!$scope.files || !$scope.files.length) return;
+            Files
+                .upload($scope.files[0])
+                .then(function (filePath) {
+                    $scope.vmFile.filePath = filePath;
+                });
         });
     });

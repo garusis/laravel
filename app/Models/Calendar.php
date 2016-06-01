@@ -12,6 +12,16 @@ class Calendar extends Model {
         return $this->hasMany('App\Models\CalendarEvent');
     }
 
+    public function minutes()
+    {
+        return $this->hasMany('App\Models\Minute');
+    }
+
+    public function files()
+    {
+        return $this->hasMany('App\Models\CalendarFile');
+    }
+
     public function candidates()
     {
         return $this->hasMany('App\Models\Candidate');

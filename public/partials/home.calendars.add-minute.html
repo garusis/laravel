@@ -34,13 +34,14 @@
                 </div>
                 <div layout="row">
                     <md-input-container flex>
-                        <lf-ng-md-file-input lf-files="files" progress></lf-ng-md-file-input>
+                        <lf-ng-md-file-input lf-files="files"></lf-ng-md-file-input>
+                        <input type="hidden" name="filePath" ng-model="vmMinute.filePath" required />
                     </md-input-container>
                 </div>
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row">
-            <md-button type="submit" class="md-raised md-primary md-hue-1">
+            <md-button type="submit" ng-disabled="minuteForm.$invalid" class="md-raised md-primary md-hue-1">
                 Agregar
             </md-button>
             <md-button class="md-raised md-warn md-hue-2" ng-click="AMinCtrl.closeDialog()">

@@ -35,11 +35,11 @@ class FileController extends Controller
      *
      * @return Response
      */
-    public function store(Input $input)
+    public function store()
     {
-        $ext = $input->get('extension');
-        $filename = round(microtime(true) * 1000).$ext;
-        $input->file('file')->move(public_path() . '/files', $filename);
+        $ext = Input::file('file')->getClientOriginalExtension();
+        $filename = round(microtime(true) * 1000).'.'.$ext;
+        Input::file('file')->move(public_path() . '/files', $filename);
         return 'public/files/'.$filename;
     }
 

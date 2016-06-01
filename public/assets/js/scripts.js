@@ -74,7 +74,8 @@ angular
                             calendary = $localStorage.currentCalendar = {
                                 status: CALENDAR_STATUS.active.value,
                                 events: [],
-                                minutes: []
+                                minutes: [],
+                                files: []
                             };
                         }
                         return calendary;
@@ -173,7 +174,7 @@ angular
             });
     })
     .config(function (RestangularProvider) {
-        var baseUrl = location.hostname === 'localhost' ? 'http://localhost/sw2_final_proyect/public/' : '/';
+        var baseUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
         baseUrl = baseUrl + 'index.php/api';
         RestangularProvider.setBaseUrl(baseUrl);
         RestangularProvider.setRequestInterceptor(function (elem, operation) {
@@ -182,7 +183,7 @@ angular
     })
     .config(function ($authProvider) {
         //$authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
-        $authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2_final_proyect/public/' : '/';
+        $authProvider.loginUrl = location.hostname === 'localhost' ? 'http://localhost/sw2/public/' : '/';
         $authProvider.loginUrl = $authProvider.loginUrl + 'index.php/api/authenticate';
     })
     .run(function ($rootScope, $auth, $state) {
